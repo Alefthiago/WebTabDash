@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_DB=webtab_db
+      - POSTGRES_USER=webtab_user
+      - POSTGRES_PASSWORD=webtab_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=webtab_db
+      - DB_USER=webtab_user
+      - DB_PASSWORD=webtab_pass
+      - DB_HOST=db
+
+volumes:
+  postgres_data:
